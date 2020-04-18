@@ -52,6 +52,12 @@ int main(int argc,char *argv[])
         //fprintf(stderr, "Soubor neexistuje\n");
         //return 1;
         input = stdin;
+        char *c;
+        while((c=fgetc(input))!=EOF)
+        {
+            fseek(input, 0, SEEK_SET);
+        }
+        
     }
     else
     {

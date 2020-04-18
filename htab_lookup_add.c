@@ -1,7 +1,5 @@
 #include "htab.h"
 #include "htab_table.h"
-#include <stdbool.h>
-#include <stdlib.h>
 
 htab_iterator_t htab_lookup_add(htab_t * t, htab_key_t key){
     htab_iterator_t ret = htab_find(t, key);
@@ -18,7 +16,13 @@ htab_iterator_t htab_lookup_add(htab_t * t, htab_key_t key){
     if(new == NULL)
         return end;
     new->data = 1;
-    new->key = key;
+    
+    char *copy = malloc(strlen(key) + 1);
+    if(copy == NULL)
+        return end;
+    memcpy(copy, key, strlen(key) + 1);
+    new->key = copy;
+
     new->next = tmp->next;
 
     t->size += 1;
