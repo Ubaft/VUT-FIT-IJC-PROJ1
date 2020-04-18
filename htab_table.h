@@ -1,5 +1,5 @@
-#ifndef __HTAB_TABLE_H
-#define __HTAB_TABLE_H
+#ifndef __HTAB_TABLE_H__
+#define __HTAB_TABLE_H__
 #include "htab.h"
 struct htab
 {
@@ -7,10 +7,10 @@ struct htab
     unsigned arr_size;
     struct htab_item *ptr[];
 };
-struct htab_item
+typedef struct htab_item
 {
     htab_key_t key;
     htab_value_t data;
     struct htab_item *next;
-};
+} htab_item_t;
 #endif
