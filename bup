@@ -1,2 +1,0 @@
-#!/bin/sh
-find . -maxdepth 1 -type f -execdir cp "{}" /mnt/d/school/backup/inprogress/ ";"
