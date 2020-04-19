@@ -2,3 +2,4 @@ bup
 *.o
 *.so
 *.a
+tail
