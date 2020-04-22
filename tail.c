@@ -1,3 +1,7 @@
+// tail.c
+// Řešení IJC-DU2, příklad 1), 23.4.2020
+// Autor: Filip Osvald, FIT
+// Přeloženo: gcc 7.5.0
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>

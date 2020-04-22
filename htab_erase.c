@@ -1,3 +1,7 @@
+// htab_erase.c
+// Řešení IJC-DU2, příklad 2), 23.4.2020
+// Autor: Filip Osvald, FIT
+// Přeloženo: gcc 7.5.0
 #include "htab.h"
 #include "htab_table.h"
 
@@ -16,6 +20,7 @@ void htab_erase(htab_t * t, htab_iterator_t it){
             }
             prev->next = tmp->next;
             free(tmp);
+            free((char*)tmp->key);
             return;
         }
         prev = tmp;

@@ -1,3 +1,8 @@
+// htab.h
+// Řešení IJC-DU2, příklad 2), 23.4.2020
+// Autor: Filip Osvald, FIT
+// Přeloženo: gcc 7.5.0
+
 // htab.h -- rozhraní knihovny htab (řešení IJC-DU2)
 // Licence: žádná (Public domain)
 

@@ -1,11 +1,11 @@
+// io.c
+// Řešení IJC-DU2, příklad 2), 23.4.2020
+// Autor: Filip Osvald, FIT
+// Přeloženo: gcc 7.5.0
 #include "io.h"
 int get_word(char *s, int max, FILE *f){
     if (f == NULL)
-    {
-        fprintf(stderr, "Invalid file\n");
-        return -1;
-    }
-    
+        return EOF;
     char c;
     c=fgetc(f);
     while ((c != EOF) && isspace(c) != 0) c = fgetc(f);

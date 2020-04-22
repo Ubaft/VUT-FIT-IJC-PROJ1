@@ -4,3 +4,5 @@ bup
 *.a
 tail
 horse
+*.out
+*.txt
