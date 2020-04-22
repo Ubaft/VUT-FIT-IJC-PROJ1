@@ -9,7 +9,7 @@ HEADERS=htab.h htab_table.h
 
 all: tail wordcount wordcount-dynamic
 
-*.o: *.c
+%.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
 #pr1

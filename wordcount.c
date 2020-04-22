@@ -5,7 +5,7 @@
 #include "htab.h"
 #include "io.h"
 #define max_word_len 128
-#define table_size  1000000//zduvodnit
+#define table_size 25357 //nejblizsi prvocislo k poctu unikatnich slov v dlouhe knize
 #ifdef HASHTEST
 size_t htab_hash_fun(htab_key_t str);
 #endif

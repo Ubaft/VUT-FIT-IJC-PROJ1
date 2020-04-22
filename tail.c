@@ -6,130 +6,151 @@
 #include<stdlib.h>
 #include<string.h>
 #include<unistd.h>
-int linecount(FILE *tocount);
-void printlines(int lines_to_print, FILE *fp);
-
+#define line_limit 1024
+void print_lines(int tail, FILE *input);
+void skip_print(int tail, FILE *input);
 int main(int argc,char *argv[])
 {
     long tail = 10;
     char *p;
-    const char * filename;
-    int filearg = 1;
-    printf("argc :%d\n", argc);
-    if(argc > 4) //maybe add for 3 args
+    if(argc > 4) 
     {
-        fprintf(stderr, "Presahnut maximalni pocet argumentu\n");\
+        fprintf(stderr, "Too many arguments\n");
         return 1;
     }
-    if(argc == 4)
+    if (argc == 1)
+    {
+        print_lines( tail, stdin);
+    }
+    else if (argc == 2)
+    {
+        if(access(argv[1], F_OK) == -1)
+        {
+            fprintf(stderr, "File doesnt exist\n");
+            return 1;
+        }
+        FILE *input = fopen(argv[1], "r");
+        if (input == NULL)
+        {
+            fprintf(stderr, "File cant be opened\n");
+            return 1;
+        }
+        print_lines(tail, input);
+    }
+    
+    else if (argc == 3)
     {
         if(strcmp(argv[1], "-n") == 0)
         {
-            //printf("it is\n");
-            if((strncmp(argv[2], "+-", 2) == 0) || (strncmp(argv[2], "-+", 2) == 0))
+            tail = strtol(argv[2], &p, 10);
+            if(strncmp(argv[2], "+", 1) == 0)
             {
-                //odstranit prvni znak a parsovat
-            }
-            else if(strncmp(argv[2], "-", 1) == 0)
-            {
-                //odstranit prvni znak a parsovat
-            }
-            else if(strncmp(argv[2], "+", 1) == 0)
-            {
-                //odstranit prvni znak a parsovat
-                printf("here +\n");
+                skip_print(tail, stdin);
             }
             else
             {
-                tail = strtol(argv[2], &p, 10);
-                //nastavit pocetr radku normalne
+                print_lines(tail, stdin);
+            }          
+        }
+    }
+    else if(argc == 4)
+    {
+        if(strcmp(argv[1], "-n") == 0)
+        {
+            if(access(argv[3], F_OK) == -1)
+            {
+                fprintf(stderr, "File doesnt exist\n");
+                return 1;
+            }
+            FILE *input = fopen(argv[3], "r");
+            if (input == NULL)
+            {
+                fprintf(stderr, "File cant be open\n");
+                return 1;
+            }
+            tail = strtol(argv[2], &p, 10);
+            if(strncmp(argv[2], "+", 1) == 0)
+            {
+                skip_print(tail, input);
+            }
+            else
+            {
+                print_lines(tail, input);
             }
         }
-        filearg = 3;
     }
-    printf("checkpoint 1\n");
-    filename = argv[filearg];
-    FILE *input;
-     // argv[1];
-    if(access(filename, F_OK) == -1)
+    return 0;
+}
+void print_lines(int tail, FILE *input)
+{
+    char p;
+    char buffer[tail][line_limit];
+    int i = 0;
+    int full = 0;
+    int toolong = 0;
+    while (fgets(buffer[i], line_limit, input) != NULL)
     {
-        //fprintf(stderr, "Soubor neexistuje\n");
-        //return 1;
-        input = stdin;
-        char c;
-        while((c=fgetc(input))!=EOF)
+        if(buffer[i][strlen(buffer[i]) - 1] != '\n')
         {
-            fseek(input, 0, SEEK_SET);
+            buffer[i][line_limit - 1] = '\n';
+            if (toolong == 0)
+            {
+                fprintf(stderr, "Warning: Too long lines found and will be shortened\n");
+            }
+            while ((p = fgetc(input)) != '\n') {};
+            toolong = 1;
         }
-        
+        i++;
+        if (i == tail)
+        {
+            i = 0;
+            full = 1;
+        }
+    }
+    if (full == 0)
+    {
+        for (int index = 0; index < i; index++)
+        {              
+            printf("%s", buffer[index]);
+        }
     }
     else
     {
-       input = fopen(filename, "rb");
-    }   
-    
-    if(input == NULL)
-    {
-        fprintf(stderr, "Otevreni souboru se nezdarilo\n");
-        fclose(input);        
-        return 1;
-    }
-    printf("checkpoint 2\n");
-    printlines(tail, input);
-    return 0;
-
-}
-int linecount(FILE *fp)
-{
-    fseek(fp, 0, SEEK_END);
-    int lines = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    printf("checkpoint 3\n");
-   
-    if(lines == 0)
-        return 0;
-    lines = 1;
-    char c;
-    printf("checkpoint 5\n");
-    while((c=fgetc(fp))!=EOF) 
-    {
-        printf("checkpoint 6\n");
-        if(c=='\n')
+        for(int j = 0; j < tail; j++)
         {
-            lines++;
-        }
-        
-   }
-   printf("checkpoint 4 lines: %d\n", lines);
-   fseek(fp, 0, SEEK_SET);
-   return lines;
-}
-
-void printlines(int lines_to_print, FILE *fp)
-{
-    int line_count = linecount(fp);
-    //printf("pocet radku je: %d\n", line_count);
-    int lineskip = line_count - lines_to_print; //osetrit minus
-    int skip = 0;
-    if(lines_to_print > line_count)
-        skip = 1;
-    int lines = 0;
-    printf("checkpoint 7\n");
-    char c;
-    if (line_count > 1 && skip != 1)
-    {
-        while((c=fgetc(fp))!=EOF) 
-        {
-            if(c=='\n')
+            printf("%s", buffer[i]);
+            i++;
+            if (i == tail)
             {
-                lines++;
+                i = 0;
             }
-            if(lines == lineskip)
-                break;
         }
     }
-   while((c=fgetc(fp))!=EOF) 
-   {
-       putc(c, stdout);
-   }
+}
+void skip_print(int tail, FILE *input)
+{
+    char p;
+    char buffer[line_limit];
+    int toolong = 0;
+    while (fgets(buffer, line_limit, input) != NULL)
+    {
+        if(buffer[strlen(buffer) - 1] != '\n')
+        {
+            buffer[line_limit - 1] = '\n';
+            if (toolong == 0)
+            {
+                fprintf(stderr, "Warning: Too long lines found and will be shortened\n");
+            }
+            while ((p = fgetc(input)) != '\n') {};
+            toolong = 1;
+        }
+        if (tail <= 1)
+        {
+            printf("%s", buffer);
+        }
+        else
+        {
+            tail--;
+        }
+    }
 }
